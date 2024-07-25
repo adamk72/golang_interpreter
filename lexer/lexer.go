@@ -2,6 +2,7 @@ package lexer
 
 import "monkey/token"
 
+
 type Lexer struct {
 	input 				string
 	position			int
