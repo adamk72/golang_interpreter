@@ -15,15 +15,6 @@ func New(input string) *Lexer {
 	return l
 }
 
-func (l *Lexer) readChar() {
-	if l.readPosition >= len(l.input) {
-		l.ch = 0 // end of input (NUL)
-	} else {
-		l.ch = l.input[l.readPosition]
-		l.position = l.readPosition
-		l.readPosition += 1
-	}
-}
 
 // this is used to loop over.
 func (l *Lexer) NextToken() token.Token {
@@ -96,13 +87,21 @@ func (l *Lexer) NextToken() token.Token {
 	return tok
 }
 
-// Like NewToken, but the loop is internalized.
-func (l *Lexer) readIdentifier() string {
-	position := l.position
-	for isLetter(l.ch) {
+// "eatWhitespace" or "consumeWhitespace" Change this up if the spaces are meaningful.
+func (l *Lexer) skipWhitespace() {
+	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
 		l.readChar()
 	}
-	return l.input[position:l.position]
+}
+
+func (l *Lexer) readChar() {
+	if l.readPosition >= len(l.input) {
+		l.ch = 0 // end of input (NUL)
+	} else {
+		l.ch = l.input[l.readPosition]
+		l.position = l.readPosition
+		l.readPosition += 1
+	}
 }
 
 func (l *Lexer) peekChar() byte {
@@ -111,6 +110,15 @@ func (l *Lexer) peekChar() byte {
 	} else {
 		return l.input[l.readPosition]
 	}
+}
+
+// Like NewToken, but the loop is internalized.
+func (l *Lexer) readIdentifier() string {
+	position := l.position
+	for isLetter(l.ch) {
+		l.readChar()
+	}
+	return l.input[position:l.position]
 }
 
 // Later: Simplify with readIndent (possibly by passing functions)
@@ -122,20 +130,13 @@ func (l *Lexer) readNumber() string {
 	return l.input[position:l.position]
 }
 
-func isDigit(ch byte) bool {
-	return '0' <= ch && ch <= '9'
-}
-
-// "eatWhitespace" or "consumeWhitespace" Change this up if the spaces are meaningful.
-func (l *Lexer) skipWhitespace() {
-	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
-		l.readChar()
-	}
-}
-
 // Add other forms of this to refine IDENT types.
 func isLetter(ch byte) bool {
 	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+}
+
+func isDigit(ch byte) bool {
+	return '0' <= ch && ch <= '9'
 }
 
 func newToken(tokenType token.TokenType, ch byte) token.Token {
