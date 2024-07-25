@@ -15,7 +15,6 @@ func New(input string) *Lexer {
 	return l
 }
 
-
 // this is used to loop over.
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token // Note: this is a type created in the token.go file; remember that the capital letter indicates that it's exportable. The lower case token is the name of the module (package token).
@@ -99,9 +98,9 @@ func (l *Lexer) readChar() {
 		l.ch = 0 // end of input (NUL)
 	} else {
 		l.ch = l.input[l.readPosition]
-		l.position = l.readPosition
-		l.readPosition += 1
 	}
+	l.position = l.readPosition
+	l.readPosition += 1
 }
 
 func (l *Lexer) peekChar() byte {
