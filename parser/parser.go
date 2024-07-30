@@ -56,6 +56,8 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
+	p.registerPrefix(token.TRUE, p.parseBoolean)
+	p.registerPrefix(token.FALSE, p.parseBoolean)
 	p.registerPrefix(token.IF, p.parseIfExpression)
 	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
 
@@ -68,10 +70,8 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
-
-	p.registerPrefix(token.TRUE, p.parseBoolean)
-	p.registerPrefix(token.FALSE, p.parseBoolean)
-
+	p.registerInfix(token.LPAREN, p.parseCallExpression)
+	
 	p.nextToken()
 	p.nextToken() //read twice so both curToken and peekToken are set
 
