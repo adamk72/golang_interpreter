@@ -21,6 +21,7 @@ func TestReturnStatements(t *testing.T) {
 			}
 			`,
 			10,
+			
 		},
 	}
 	for _, tt := range tests {

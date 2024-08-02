@@ -5,23 +5,10 @@ import (
 	"monkey/object"
 )
 
-var (
-	NULL  = &object.Null{}
-	TRUE  = &object.Boolean{Value: true}
-	FALSE = &object.Boolean{Value: false}
-)
-
-func nativeBoolToBooleanObject(input bool) *object.Boolean {
-	if input {
-		return TRUE
-	}
-	return FALSE
-}
-
 func Eval(node ast.Node) object.Object {
 	switch node := node.(type) {
 	case *ast.Program:
-		return evalProgram(node.Statements)
+		return evalProgram(node)
 
 	case *ast.ExpressionStatement:
 		return Eval(node.Expression)
@@ -34,24 +21,54 @@ func Eval(node ast.Node) object.Object {
 
 	case *ast.PrefixExpression:
 		right := Eval(node.Right)
+		if isError(right) {
+			return right
+		}
 		return evalPrefixExpression(node.Operator, right)
 
 	case *ast.InfixExpression:
 		left := Eval(node.Left)
+		if isError(left) {
+			return left
+		}
 		right := Eval(node.Right)
+		if isError(right) {
+			return right
+		}
+
 		return evalInfixExpression(node.Operator, left, right)
 
 	case *ast.BlockStatement:
 		return evalBlockStatement(node)
-		
+
 	case *ast.IfExpression:
 		return evalIfExpression(node)
 
 	case *ast.ReturnStatement:
 		val := Eval(node.ReturnValue)
+		if isError(val) {
+			return val
+		}
 		return &object.ReturnValue{Value: val}
 
 	}
 
 	return nil
+}
+
+func evalProgram(program *ast.Program) object.Object {
+	var result object.Object
+
+	for _, stmt := range program.Statements {
+		result = Eval(stmt)
+
+		switch result := result.(type) {
+		case *object.ReturnValue:
+			return result.Value
+		case *object.Error:
+			return result
+		}
+	}
+
+	return result
 }
