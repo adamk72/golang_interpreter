@@ -1,6 +1,9 @@
 package parser
 
-import "monkey/ast"
+import (
+	"monkey/ast"
+	"monkey/token"
+)
 
 func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	// defer untrace(trace("parseInfixExpression"))
@@ -15,4 +18,14 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	expression.Right = p.parseExpression(precedence)
 
 	return expression
+}
+
+func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
+	exp := &ast.IndexExpression{Token: p.curToken, Left: left}
+	p.nextToken()
+	exp.Index = p.parseExpression(LOWEST)
+	if !p.expectPeek(token.RBRACKET) {
+		return nil
+	}
+	return exp
 }
