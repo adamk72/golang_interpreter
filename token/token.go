@@ -70,4 +70,6 @@ const (
 	RETURN   = "RETURN"
 
 	STRING = "STRING"
+	COLON = ":"
+	
 )
