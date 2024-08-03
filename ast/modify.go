@@ -29,7 +29,8 @@ func Modify(node Node, modifier ModifierFunc) Node {
 		if node.Alternative != nil {
 			node.Alternative, _ = Modify(node.Alternative, modifier).(*BlockStatement)
 		}
-	
+
+	// Underscores warnings are "TODOs" for later error handling
 	case *BlockStatement:
 		for i, _ := range node.Statements {
 			node.Statements[i], _ = Modify(node.Statements[i], modifier).(Statement)
@@ -37,10 +38,10 @@ func Modify(node Node, modifier ModifierFunc) Node {
 
 	case *LetStatement:
 		node.Value, _ = Modify(node.Value, modifier).(Expression)
-	
+
 	case *ReturnStatement:
 		node.ReturnValue, _ = Modify(node.ReturnValue, modifier).(Expression)
-	
+
 	case *FunctionLiteral:
 		for i, _ := range node.Parameters {
 			node.Parameters[i], _ = Modify(node.Parameters[i], modifier).(*Identifier)
@@ -50,6 +51,14 @@ func Modify(node Node, modifier ModifierFunc) Node {
 		for i, _ := range node.Elements {
 			node.Elements[i], _ = Modify(node.Elements[i], modifier).(Expression)
 		}
+	case *HashLiteral:
+		newPairs := make(map[Expression]Expression)
+		for key, val := range node.Pairs {
+			newKey, _ := Modify(key, modifier).(Expression)
+			newVal, _ := Modify(val, modifier).(Expression)
+			newPairs[newKey] = newVal
+		}
+		node.Pairs = newPairs
 	}
 	return modifier(node)
 }
