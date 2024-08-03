@@ -5,6 +5,7 @@
     "Hashable",
     "integ",
     "LESSGREATER",
+    "mymacro",
     "untrace"
   ]
 }
