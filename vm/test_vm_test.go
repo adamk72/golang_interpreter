@@ -67,7 +67,7 @@ func testIntegerObject(expected int64, actual object.Object) error {
 func TestIntegerArithmetic(t *testing.T) { tests := []vmTestCase{
 	{"1", 1},
 	{"2", 2},
-	{"1 + 2", 2}, // FIXME
+	{"1 + 2", 3}, // FIXME
 	}
 				 runVmTests(t, tests)
 		 }
