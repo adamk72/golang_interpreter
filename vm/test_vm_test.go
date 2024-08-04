@@ -33,9 +33,11 @@ func runVmTests(t *testing.T, tests []vmTestCase) {
 	}
 }
 
-func testExpectedObject(t *testing.T,
+func testExpectedObject(
+	t *testing.T,
 	expected interface{},
-	actual object.Object) {
+	actual object.Object,
+) {
 	t.Helper()
 	switch expected := expected.(type) {
 	case int:
@@ -49,7 +51,12 @@ func testExpectedObject(t *testing.T,
 		if err != nil {
 			t.Errorf("testBooleanObject failed: %s", err)
 		}
-	}
+
+	case *object.Null:
+		if actual != Null {
+			t.Errorf("object is not Null: %T (%+v)", actual, actual)
+		}
+	} // end of main switch.
 }
 
 func parse(input string) *ast.Program {

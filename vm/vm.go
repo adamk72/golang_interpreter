@@ -19,6 +19,7 @@ type VM struct {
 
 var True = &object.Boolean{Value: true}
 var False = &object.Boolean{Value: false}
+var Null = &object.Null{}
 
 func New(bytecode *compiler.Bytecode) *VM {
 	return &VM{
@@ -100,6 +101,12 @@ func (vm *VM) Run() error {
 				ip = pos - 1
 			}
 
+		case code.OpNull:
+			err := vm.push(Null)
+			if err != nil {
+				return err
+			}
+
 		} // End of main switch.
 	}
 	return nil
@@ -109,6 +116,8 @@ func isTruthy(obj object.Object) bool {
 	switch obj := obj.(type) {
 	case *object.Boolean:
 		return obj.Value
+	case *object.Null:
+		return false
 	default:
 		return true
 	}
@@ -121,22 +130,6 @@ func (vm *VM) executeMinusOperator() error {
 	}
 	value := operand.(*object.Integer).Value
 	return vm.push(&object.Integer{Value: -value})
-}
-
-func (vm *VM) executeComparison(op code.Opcode) error {
-	right := vm.pop()
-	left := vm.pop()
-	if left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ {
-		return vm.executeIntegerComparison(op, left, right)
-	}
-	switch op {
-	case code.OpEqual:
-		return vm.push(nativeBoolToBooleanObject(right == left))
-	case code.OpNotEqual:
-		return vm.push(nativeBoolToBooleanObject(right != left))
-	default:
-		return fmt.Errorf("unknown operator: %d (%s %s)", op, left.Type(), right.Type())
-	}
 }
 
 func (vm *VM) executeIntegerComparison(op code.Opcode,
@@ -161,25 +154,6 @@ func (vm *VM) executeIntegerComparison(op code.Opcode,
 	}
 	return nil
 
-}
-
-func (vm *VM) executeBangOperator() error {
-	operand := vm.pop()
-	switch operand {
-	case True:
-		return vm.push(False)
-	case False:
-		return vm.push(True)
-	default:
-		return vm.push(False)
-	}
-}
-
-func nativeBoolToBooleanObject(input bool) *object.Boolean {
-	if input {
-		return True
-	}
-	return False
 }
 
 func (vm *VM) push(o object.Object) error {
