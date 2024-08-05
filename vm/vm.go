@@ -145,6 +145,14 @@ func (vm *VM) Run() error {
 				return err
 			}
 
+		case code.OpIndex:
+			index := vm.pop()
+			left := vm.pop()
+			err := vm.executeIndexExpression(left, index)
+			if err != nil {
+				return err
+			}
+
 		} // End of main switch.
 	}
 	return nil
