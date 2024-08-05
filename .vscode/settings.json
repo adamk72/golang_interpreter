@@ -1,4 +1,15 @@
 {
+"editor.tokenColorCustomizations": {
+  "textMateRules": [
+    {
+      "scope": "entity.name.function.go",
+      "settings": {
+        "foreground": "#FFDB58",
+        "fontStyle": "bold",
+      },
+    },
+  ]
+},
   "cSpell.words": [
     "barfoo",
     "builtins",
@@ -8,5 +19,5 @@
     "LESSGREATER",
     "mymacro",
     "untrace"
-  ]
+  ],
 }
