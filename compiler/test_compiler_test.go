@@ -16,7 +16,6 @@ type compilerTestCase struct {
 	expectedInstructions []code.Instructions
 }
 
-
 func runCompilerTests(t *testing.T, tests []compilerTestCase) {
 	t.Helper()
 	for _, tt := range tests {
@@ -68,7 +67,8 @@ func concatInstructions(s []code.Instructions) code.Instructions {
 	return out
 }
 
-func testConstants(t *testing.T,
+func testConstants(
+	t *testing.T,
 	expected []interface{},
 	actual []object.Object,
 ) error {
@@ -83,7 +83,13 @@ func testConstants(t *testing.T,
 			if err != nil {
 				return fmt.Errorf("constant %d - testIntegerObject failed: %s", i, err)
 			}
-		}
+
+		case string:
+			err := testStringObject(constant, actual[i])
+			if err != nil {
+				return fmt.Errorf("constant %d - testStringObject failed: %s", i, err)
+			}
+		} // end of main switch
 	}
 	return nil
 }

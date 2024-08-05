@@ -8,6 +8,13 @@
         "fontStyle": "bold",
       },
     },
+    {
+      "scope": "entity.name.function.support.go",
+      "settings": {
+        "foreground": "#7AA2F7",
+        "fontStyle": "italic"
+      }
+    },
   ]
 },
   "cSpell.words": [
@@ -17,6 +24,7 @@
     "Hashable",
     "integ",
     "LESSGREATER",
+    "monkeybanana",
     "mymacro",
     "untrace"
   ],
