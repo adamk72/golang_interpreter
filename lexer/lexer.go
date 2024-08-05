@@ -8,7 +8,6 @@ type Lexer struct {
 	readPosition int
 	ch           byte
 }
-
 func New(input string) *Lexer {
 	l := &Lexer{input: input}
 	l.readChar()

@@ -6,7 +6,6 @@ import (
 )
 
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
-	// defer untrace(trace("parseExpressionStatement"))
 	stmt := &ast.ExpressionStatement{Token: p.curToken}
 
 	stmt.Expression = p.parseExpression(LOWEST)
@@ -19,15 +18,12 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 }
 
 
-
 func (p *Parser) parseExpression(precedence int) ast.Expression {
-	// defer untrace(trace("parseExpression"))
 	prefix := p.prefixParseFns[p.curToken.Type]
 	if prefix == nil {
 		p.noPrefixParseFnError(p.curToken.Type)
 		return nil
 	}
-
 	leftExp := prefix()
 
 	for !p.peekTokenIs(token.SEMICOLON) && precedence < p.peekPrecedence() {

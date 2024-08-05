@@ -62,6 +62,7 @@ func TestIntegerArithmetic(t *testing.T) {
 				code.Make(code.OpPop),
 			},
 		},
+		
 	}
 	runCompilerTests(t, tests)
 }
