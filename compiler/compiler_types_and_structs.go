@@ -20,6 +20,7 @@ type Compiler struct {
 type SymbolScope string
 
 const (
+	LocalScope  SymbolScope = "LOCAL"
 	GlobalScope SymbolScope = "GLOBAL"
 )
 
@@ -30,6 +31,7 @@ type Symbol struct {
 }
 
 type SymbolTable struct {
+	Outer          *SymbolTable
 	store          map[string]Symbol
 	numDefinitions int
 }
