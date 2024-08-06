@@ -19,11 +19,6 @@ type Compiler struct {
 
 type SymbolScope string
 
-const (
-	LocalScope  SymbolScope = "LOCAL"
-	GlobalScope SymbolScope = "GLOBAL"
-)
-
 type Symbol struct {
 	Name  string
 	Scope SymbolScope

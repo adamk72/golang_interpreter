@@ -1,5 +1,11 @@
 package compiler
 
+const (
+	LocalScope   SymbolScope = "LOCAL"
+	GlobalScope  SymbolScope = "GLOBAL"
+	BuiltinScope SymbolScope = "BUILTIN"
+)
+
 func (s *SymbolTable) Resolve(name string) (Symbol, bool) {
 	obj, ok := s.store[name]
 	if !ok && s.Outer != nil {
@@ -18,6 +24,12 @@ func (s *SymbolTable) Define(name string) Symbol {
 	}
 	s.store[name] = symbol
 	s.numDefinitions++
+	return symbol
+}
+
+func (s *SymbolTable) DefineBuiltin(index int, name string) Symbol {
+	symbol := Symbol{Name: name, Index: index, Scope: BuiltinScope}
+	s.store[name] = symbol
 	return symbol
 }
 
