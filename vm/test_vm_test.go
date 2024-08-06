@@ -102,6 +102,16 @@ func testExpectedObject(
 			}
 		}
 
+	case *object.Error:
+		errObj, ok := actual.(*object.Error)
+		if !ok {
+			t.Errorf("object is not Error: %T (%+v)", actual, actual)
+			return
+		}
+		if errObj.Message != expected.Message {
+			t.Errorf("wrong error message. expected=%q, got=%q", expected.Message, errObj.Message)
+		}
+
 	} // end of main switch.
 }
 

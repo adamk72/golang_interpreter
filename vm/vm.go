@@ -173,10 +173,10 @@ func (vm *VM) Run() error {
 			numArgs := code.ReadUint8(ins[ip+1:])
 			vm.currentFrame().ip += 1
 
-			err := vm.callFunction(int(numArgs))
-			if err != nil {
+			err := vm.executeCall(int(numArgs))
+			 if err != nil {
 				return err
-			}
+				}
 
 		case code.OpReturnValue:
 			returnValue := vm.pop()
@@ -206,6 +206,15 @@ func (vm *VM) Run() error {
 			vm.currentFrame().ip += 1
 			frame := vm.currentFrame()
 			err := vm.push(vm.stack[frame.basePointer+int(localIndex)])
+			if err != nil {
+				return err
+			}
+
+		case code.OpGetBuiltin:
+			builtinIndex := code.ReadUint8(ins[ip+1:])
+			vm.currentFrame().ip += 1
+			definition := object.Builtins[builtinIndex]
+			err := vm.push(definition.Builtin)
 			if err != nil {
 				return err
 			}
