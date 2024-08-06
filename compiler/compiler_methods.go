@@ -22,10 +22,6 @@ func (c *Compiler) changeOperand(opPos int, operand int) {
 	c.replaceInstruction(opPos, newInstruction)
 }
 
-func (c *Compiler) lastInstructionIsPop() bool {
-	return c.scopes[c.scopeIndex].lastInstruction.Opcode == code.OpPop
-}
-
 func (c *Compiler) removeLastPop() {
 	last := c.scopes[c.scopeIndex].lastInstruction
 	previous := c.scopes[c.scopeIndex].previousInstruction
@@ -82,9 +78,23 @@ func (c *Compiler) enterScope() {
 	c.scopes = append(c.scopes, scope)
 	c.scopeIndex++
 }
+
 func (c *Compiler) leaveScope() code.Instructions {
 	instructions := c.currentInstructions()
 	c.scopes = c.scopes[:len(c.scopes)-1]
 	c.scopeIndex--
 	return instructions
+}
+
+func (c *Compiler) lastInstructionIs(op code.Opcode) bool {
+	if len(c.currentInstructions()) == 0 {
+		return false
+	}
+	return c.scopes[c.scopeIndex].lastInstruction.Opcode == op
+}
+
+func (c *Compiler) replaceLastPopWithReturn() {
+	lastPos := c.scopes[c.scopeIndex].lastInstruction.Position
+	c.replaceInstruction(lastPos, code.Make(code.OpReturnValue))
+	c.scopes[c.scopeIndex].lastInstruction.Opcode = code.OpReturnValue
 }
