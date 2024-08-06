@@ -1,7 +1,6 @@
 package vm
 
 import (
-	"fmt"
 	"monkey/code"
 	"monkey/compiler"
 	"monkey/object"
@@ -171,14 +170,13 @@ func (vm *VM) Run() error {
 			}
 
 		case code.OpCall:
-			vm.currentFrame().ip += 1 // TEMP while building up the code for parameters
-			fn, ok := vm.stack[vm.sp-1].(*object.CompiledFunction)
-			if !ok {
-				return fmt.Errorf("calling non-function")
+			numArgs := code.ReadUint8(ins[ip+1:])
+			vm.currentFrame().ip += 1
+
+			err := vm.callFunction(int(numArgs))
+			if err != nil {
+				return err
 			}
-			frame := NewFrame(fn, vm.sp)
-			vm.pushFrame(frame)
-			vm.sp = frame.basePointer + fn.NumLocals
 
 		case code.OpReturnValue:
 			returnValue := vm.pop()
