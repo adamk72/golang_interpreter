@@ -29,6 +29,7 @@ type SymbolTable struct {
 	Outer          *SymbolTable
 	store          map[string]Symbol
 	numDefinitions int
+	FreeSymbols []Symbol
 }
 
 type CompilationScope struct {

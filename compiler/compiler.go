@@ -29,7 +29,8 @@ func New() *Compiler {
 
 func NewSymbolTable() *SymbolTable {
 	s := make(map[string]Symbol)
-	return &SymbolTable{store: s}
+	free := []Symbol{}
+	return &SymbolTable{store: s, FreeSymbols: free}
 }
 
 func NewWithState(s *SymbolTable, constants []object.Object) *Compiler {
@@ -248,16 +249,19 @@ func (c *Compiler) Compile(node ast.Node) error {
 			c.emit(code.OpReturn)
 		}
 
+		freeSymbols := c.symbolTable.FreeSymbols
 		numLocals := c.symbolTable.numDefinitions
 		instructions := c.leaveScope()
+		for _, s := range freeSymbols {
+			c.loadSymbol(s)
+		}
 		compiledFn := &object.CompiledFunction{
 			Instructions:  instructions,
 			NumLocals:     numLocals,
 			NumParameters: len(node.Parameters),
 		}
-
 		fnIndex := c.addConstant(compiledFn)
-		c.emit(code.OpClosure, fnIndex, 0)
+		c.emit(code.OpClosure, fnIndex, len(freeSymbols))
 
 	case *ast.ReturnStatement:
 		err := c.Compile(node.ReturnValue)
