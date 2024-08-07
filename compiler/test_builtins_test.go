@@ -34,7 +34,7 @@ func TestBuiltins(t *testing.T) {
 					code.Make(code.OpReturnValue),
 				}},
 			expectedInstructions: []code.Instructions{
-				code.Make(code.OpConstant, 0),
+				code.Make(code.OpClosure, 0, 0),
 				code.Make(code.OpPop),
 			}},
 	}
