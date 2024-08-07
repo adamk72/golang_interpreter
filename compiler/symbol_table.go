@@ -1,10 +1,11 @@
 package compiler
 
 const (
-	LocalScope   SymbolScope = "LOCAL"
-	GlobalScope  SymbolScope = "GLOBAL"
-	BuiltinScope SymbolScope = "BUILTIN"
-	FreeScope    SymbolScope = "FREE"
+	LocalScope    SymbolScope = "LOCAL"
+	GlobalScope   SymbolScope = "GLOBAL"
+	BuiltinScope  SymbolScope = "BUILTIN"
+	FreeScope     SymbolScope = "FREE"
+	FunctionScope SymbolScope = "FUNCTION"
 )
 
 func (s *SymbolTable) defineFree(original Symbol) Symbol {
@@ -54,4 +55,10 @@ func NewEnclosedSymbolTable(outer *SymbolTable) *SymbolTable {
 	s := NewSymbolTable()
 	s.Outer = outer
 	return s
+}
+
+func (s *SymbolTable) DefineFunctionName(name string) Symbol {
+	symbol := Symbol{Name: name, Index: 0, Scope: FunctionScope}
+	s.store[name] = symbol
+	return symbol
 }

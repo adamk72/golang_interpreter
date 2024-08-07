@@ -207,7 +207,6 @@ func TestCallingFunctionsWithArgumentsAndBindings(t *testing.T) {
 	}
 	runVmTests(t, tests)
 }
-
 func TestCallingFunctionsWithWrongArguments(t *testing.T) {
 	tests := []vmTestCase{
 		{
@@ -223,24 +222,69 @@ func TestCallingFunctionsWithWrongArguments(t *testing.T) {
 			expected: `wrong number of arguments: want=2, got=1`,
 		},
 	}
-
 	for _, tt := range tests {
 		program := parse(tt.input)
-
 		comp := compiler.New()
 		err := comp.Compile(program)
 		if err != nil {
 			t.Fatalf("compiler error: %s", err)
 		}
-
 		vm := New(comp.Bytecode())
 		err = vm.Run()
 		if err == nil {
 			t.Fatalf("expected VM error but resulted in none.")
 		}
-
 		if err.Error() != tt.expected {
 			t.Fatalf("wrong VM error: want=%q, got=%q", tt.expected, err)
 		}
 	}
+}
+func TestRecursiveFunctions(t *testing.T) {
+	tests := []vmTestCase{
+		{
+			input: `
+			let countDown = fn(x) {
+			if (x == 0) {
+			return 0;
+			} else {
+			countDown(x - 1);
+			}
+			};
+			countDown(1);
+			`,
+			expected: 0,
+		},
+		{
+			input: `
+			let countDown = fn(x) {
+			if (x == 0) {
+			return 0;
+			} else {
+			countDown(x - 1);
+			}
+			};
+			let wrapper = fn() {
+			countDown(1);
+			};
+			wrapper();
+			`,
+			expected: 0,
+		},
+		{
+			input: `
+			let wrapper = fn() {
+			let countDown = fn(x) {
+			if (x == 0) {
+			return 0;
+			} else {
+			countDown(x - 1);
+			} };
+			countDown(1);
+			};
+			wrapper();
+			`,
+			expected: 0,
+		},
+	}
+	runVmTests(t, tests)
 }
