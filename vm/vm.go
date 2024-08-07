@@ -27,7 +27,8 @@ var Null = &object.Null{}
 
 func New(bytecode *compiler.Bytecode) *VM {
 	mainFn := &object.CompiledFunction{Instructions: bytecode.Instructions}
-	mainFrame := NewFrame(mainFn, 0)
+	mainClosure := &object.Closure{Fn: mainFn}
+	mainFrame := NewFrame(mainClosure, 0)
 
 	frames := make([]*Frame, MaxFrames)
 	frames[0] = mainFrame
@@ -174,9 +175,9 @@ func (vm *VM) Run() error {
 			vm.currentFrame().ip += 1
 
 			err := vm.executeCall(int(numArgs))
-			 if err != nil {
+			if err != nil {
 				return err
-				}
+			}
 
 		case code.OpReturnValue:
 			returnValue := vm.pop()
@@ -215,6 +216,15 @@ func (vm *VM) Run() error {
 			vm.currentFrame().ip += 1
 			definition := object.Builtins[builtinIndex]
 			err := vm.push(definition.Builtin)
+			if err != nil {
+				return err
+			}
+
+		case code.OpClosure:
+			constIndex := code.ReadUint16(ins[ip+1:])
+			_ = code.ReadUint8(ins[ip+3:])
+			vm.currentFrame().ip += 3
+			err := vm.pushClosure(int(constIndex))
 			if err != nil {
 				return err
 			}
